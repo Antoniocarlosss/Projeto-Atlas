@@ -2,23 +2,6 @@
 body { font-family: sans-serif; margin: 0; background: var(--bg); }
 body.tema-escuro { background: #1a1a1a; color: #fff; }
 
-.no-print { display: block; }
-
-/* CSS MÁGICO PARA IMPRESSÃO */
-@media print {
-    /* Esconde tudo que não for o relatório */
-    body * { visibility: hidden; background: none !important; }
-    #conteudo-imprimivel, #conteudo-imprimivel * { visibility: visible; }
-    
-    /* Posiciona o relatório no topo total da folha */
-    #modal-pdf { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
-    .modal-content { border: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
-    .no-print { display: none !important; } /* Botões não saem no papel */
-
-    @page { size: landscape; margin: 1cm; }
-}
-
-/* Resto do Layout */
 #tela-login { height: 100vh; display: flex; justify-content: center; align-items: center; background: #000; }
 .login-box { background: #fff; padding: 30px; border-radius: 10px; width: 280px; text-align: center; }
 .logo-login { width: 120px; margin-bottom: 20px; }
@@ -27,25 +10,23 @@ header { background: #000; color: #fff; padding: 10px 20px; display: flex; justi
 .logo-header { height: 30px; }
 
 .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
-.card { background: #fff; padding: 20px; border-radius: 10px; text-align: center; cursor: pointer; border-bottom: 4px solid #ddd; }
-.card.blue { border-color: #2196f3; } .card.purple { border-color: #9c27b0; }
+.card { background: #fff; padding: 20px; border-radius: 10px; text-align: center; cursor: pointer; border-bottom: 4px solid #ddd; color: #333; }
+.card.blue { border-color: #2196f3; } .card.orange { border-color: #ff9800; } .card.purple { border-color: #9c27b0; } .card.green { border-color: #2ecc71; }
 
 .form-section { background: #fff; padding: 15px; border-radius: 8px; margin: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); color: #333; }
-.form-row { display: flex; gap: 10px; margin-bottom: 10px; }
-.col-8 { flex: 2; } .col-4 { flex: 1; }
-input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+.btn-primary, .btn-save { border: none; padding: 12px; border-radius: 5px; color: #fff; font-weight: bold; cursor: pointer; width: 100%; }
+.btn-primary { background: var(--primary); }
+.blue { background: #2196f3; } .purple { background: #9c27b0; } .green { background: #27ae60; } .gray { background: #333; }
+.btn-voltar { background: #555; color: #fff; border: none; padding: 8px 15px; margin: 10px; border-radius: 4px; cursor: pointer; }
 
-.btn-primary, .btn-save { border: none; padding: 12px; border-radius: 5px; color: #080808; font-weight: bold; cursor: pointer; width: 100%; }
-.blue { background: #2196f3; } .purple { background: #9c27b0; } .green { background: #27ae60; }
+input, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
 
-.modal { display: none; position: fixed; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; overflow-y: auto; }
-.modal-content { background: #fff; margin: 20px auto; padding: 20px; width: 90%; max-width: 900px; border-radius: 5px; }
-
-.pdf-table { width: 100%; border-collapse: collapse; margin-top: 15px; color: #000; }
-.pdf-table th, .pdf-table td { border: 1px solid #000; padding: 5px; font-size: 11px; }
-.grid-quimicos { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-/* Garante que o select de mm não fique colado nas bordas */
-select.col-4 {
-    cursor: pointer;
-    background-color: #fff;
-}
+/* CALCULADORA STYLE */
+.calculator-container { background: #1e1e2f; color: white; }
+.btnGroup { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 5px; }
+.btnGroup button { background: #333; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; }
+.btnGroup button.selecionado { background: #00e0ff !important; color: black !important; font-weight: bold; transform: scale(1.05); }
+.result-box { margin-top: 20px; padding: 15px; background: #111; border-radius: 10px; border: 1px solid #00e0ff; text-align: center; }
+#res-metros { color: #00ff9c; font-size: 24px; }
+#res-tempo { color: #ffd54f; font-size: 20px; }
+#res-hora { color: #ff6b6b; font-size: 18px; }
