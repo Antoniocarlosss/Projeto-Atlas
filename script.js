@@ -38,15 +38,23 @@ function salvarUsuario() {
 
 function iniciarRodada() {
     const esp = document.getElementById('inj-esp').value;
-    if(!esp) return alert("Qual a espessura?");
+    if(!esp) return alert("Selecione a espessura!");
+    
     db_live.push({
         painel: document.getElementById('inj-painel').value,
-        esp: esp + "mm", metros: "", vel: "", ocorrencias: [],
+        esp: esp + " mm", // Adiciona o espaço e mm aqui
+        metros: "", 
+        vel: "", 
+        ocorrencias: [],
         quimicos: {mdi:"", pur:"", pir:"", c1:"", c4:"", pent:""},
         op: userLogado.nome
     });
+    
     localStorage.setItem('atlas_live', JSON.stringify(db_live));
     atualizarLista();
+    
+    // Limpa a seleção após adicionar
+    document.getElementById('inj-esp').value = "";
 }
 
 function salvarEdicao() {
