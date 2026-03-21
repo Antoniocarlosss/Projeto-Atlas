@@ -29,9 +29,45 @@
         <main class="no-print">
             <section id="grid-home" class="grid-container">
                 <div class="card blue" onclick="abrirModulo('Injeção')"><i>⚙️</i><span>Injeção</span></div>
-                <div class="card orange"><i>🌀</i><span>Bobina</span></div>
+                <div class="card orange" onclick="abrirModulo('Bobines')"><i>🌀</i><span>Bobines</span></div>
                 <div class="card purple" id="card-gestao" onclick="abrirModulo('Gestão')"><i>👥</i><span>Gestão de Pessoas</span></div>
                 <div class="card gray" onclick="abrirModulo('Configuração')"><i>🛠️</i><span>Configuração</span></div>
+            </section>
+
+            <section id="modulo-bobines" style="display:none;">
+                <button onclick="voltarHome()" class="btn-voltar">← Voltar</button>
+                <div class="grid-container">
+                    <div class="card green" onclick="abrirSubModulo('calc')"><i>🧮</i><span>Calculadora</span></div>
+                    <div class="card blue" onclick="abrirSubModulo('rel')"><i>📊</i><span>Relatório</span></div>
+                </div>
+            </section>
+
+            <section id="bobine-calc" style="display:none;">
+                <button onclick="abrirModulo('Bobines')" class="btn-voltar">← Voltar</button>
+                <div class="form-section calculator-container">
+                    <h2 id="tituloCalc">Calculadora de Bobina</h2>
+                    <div id="saudacao" class="saudacao"></div>
+
+                    <label>Largura da bobina externa (cm)</label>
+                    <select id="largura-calc"></select>
+
+                    <label>Espessura da chapa (mm)</label>
+                    <div id="espessuras-btns" class="btnGroup"></div>
+
+                    <label>Velocidade da máquina (m/min)</label>
+                    <div id="velocidades-btns" class="btnGroup"></div>
+
+                    <div id="resultado-calc" class="result-box">
+                        <h3 id="res-metros"></h3>
+                        <h3 id="res-tempo"></h3>
+                        <h3 id="res-hora"></h3>
+                    </div>
+                </div>
+            </section>
+
+            <section id="bobine-rel" style="display:none;">
+                <button onclick="abrirModulo('Bobines')" class="btn-voltar">← Voltar</button>
+                <div class="form-section"><h3>Relatório de Bobines</h3></div>
             </section>
 
             <section id="modulo-gestao" style="display:none;">
@@ -60,84 +96,57 @@
                     <button class="tab-btn active" id="tab-rel" onclick="mudarAba('relatorio')">Produção</button>
                     <button class="tab-btn" id="tab-hist" onclick="mudarAba('historico')">Histórico</button>
                 </div>
-
                 <div id="aba-relatorio">
-                    <div class="form-section">
-                        <label>Data:</label><input type="date" id="inj-data">
-                    </div>
+                    <div class="form-section"><label>Data:</label><input type="date" id="inj-data"></div>
                     <div class="form-section highlight">
                         <div class="form-row">
                             <select id="inj-painel" class="col-8">
-                                 <option value="5 Ondas">5 Ondas</option>
+                                <option value="5 Ondas">5 Ondas</option>
                                 <option value="Telha Canudo">Telha Canudo</option>
                                 <option value="Fachada oculta">Fachada Oculta</option>
                                 <option value="Fachada visivel">Fachada visivel</option>
                                 <option value="Fachada ondulada">Fachada ondulada</option>
                                 <option value="Polipainel">Polipainel</option>
                             </select>
-
-                      <select id="inj-esp" class="col-4">
-                        <option value="" disabled selected>mm</option>
-                        <option value="20">20 mm</option>
-                        <option value="30">30 mm</option>
-                        <option value="40">40 mm</option>
-                        <option value="50">50 mm</option>
-                        <option value="60">60 mm</option>
-                        <option value="80">80 mm</option>
-                        <option value="100">100 mm</option>
-                        <option value="120">120mm</option>
-                      </select>
+                            <select id="inj-esp" class="col-4">
+                                <option value="" disabled selected>mm</option>
+                                <option value="20">20 mm</option>
+                                <option value="30">30 mm</option>
+                                <option value="40">40 mm</option>
+                                <option value="50">50 mm</option>
+                                <option value="60">60 mm</option>
+                                <option value="80">80 mm</option>
+                                <option value="100">100 mm</option>
+                                <option value="120">120mm</option>
+                            </select>
                         </div>
                         <button onclick="iniciarRodada()" class="btn-save blue">ABRIR RODADA</button>
                     </div>
-
                     <div id="lista-rodadas"></div>
-
                     <div id="area-edicao" class="form-section edit-box" style="display:none;">
                         <input type="hidden" id="edit-idx">
-                        <div class="avaria-input">
-                            <label>Add Avaria:</label>
-                            <input type="time" id="ed-h">
-                            <input type="text" id="ed-t" placeholder="Descrição">
-                            <button onclick="addOcorrencia()" class="btn-small">INSERIR</button>
-                        </div>
                         <div class="form-row">
                             <input type="number" id="ed-m" placeholder="Metros">
                             <input type="text" id="ed-v" placeholder="Velocidade">
                         </div>
                         <div class="grid-quimicos">
-                            <input type="number" id="q-mdi" placeholder="MDI">
-                            <input type="number" id="q-pur" placeholder="PUR">
-                            <input type="number" id="q-pir" placeholder="PIR">
-                            <input type="number" id="q-c1" placeholder="C1">
-                            <input type="number" id="q-c4" placeholder="C4">
-                            <input type="number" id="q-pent" placeholder="PENT">
+                            <input type="number" id="q-mdi" placeholder="MDI"><input type="number" id="q-pur" placeholder="PUR">
+                            <input type="number" id="q-pir" placeholder="PIR"><input type="number" id="q-c1" placeholder="C1">
+                            <input type="number" id="q-c4" placeholder="C4"><input type="number" id="q-pent" placeholder="PENT">
                         </div>
                         <button onclick="salvarEdicao()" class="btn-save green" style="margin-top:10px;">SALVAR</button>
                     </div>
                     <button onclick="fecharPasta()" class="btn-primary" style="margin-top:20px; background: #c41e24;">FECHAR DIA</button>
                 </div>
-
                 <div id="aba-historico" style="display:none;"><div id="lista-pastas"></div></div>
             </section>
 
             <section id="modulo-config" style="display:none;">
                 <button onclick="voltarHome()" class="btn-voltar">← Voltar</button>
-                <button onclick="mudarTema('claro')" class="btn-save">MODO CLARO</button>
-                <button onclick="mudarTema('escuro')" class="btn-save" style="background:#333; margin-top:10px;">MODO ESCURO</button>
+                <button onclick="mudarTema('claro')" class="btn-save blue">MODO CLARO</button>
+                <button onclick="mudarTema('escuro')" class="btn-save gray" style="margin-top:10px;">MODO ESCURO</button>
             </section>
         </main>
-
-        <div id="modal-pdf" class="modal">
-            <div class="modal-content">
-                <div id="conteudo-imprimivel">
-                    </div>
-                <div class="no-print" style="margin-top:30px; display:flex; gap:10px;">
-                    <button onclick="window.print()" class="btn-save blue">GERAR PDF / IMPRIMIR</button>
-                    <button onclick="document.getElementById('modal-pdf').style.display='none'" class="btn-logout">FECHAR</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script src="script.js"></script>
