@@ -67,9 +67,40 @@
             </section>
 
             <section id="bobine-rel" style="display:none;">
-                <button onclick="abrirModulo('Bobines')" class="btn-voltar">← Voltar</button>
-                <div class="form-section"><h3>Relatório de Bobines</h3></div>
-            </section>
+    <button onclick="abrirModulo('Bobines')" class="btn-voltar">← Voltar</button>
+    
+    <div class="tabs">
+        <button class="tab-btn active" id="tab-bob-prod" onclick="mudarAbaBobine('producao')">Lançamento</button>
+        <button class="tab-btn" id="tab-bob-hist" onclick="mudarAbaBobine('historico')">Histórico</button>
+    </div>
+
+    <div id="aba-bobine-producao">
+        <div class="form-section">
+            <label>O que deseja lançar?</label>
+            <select id="bob-tipo-entrada" onchange="toggleCamposBobine()">
+                <option value="">Selecione...</option>
+                <option value="filme">Filme</option>
+                <option value="bobina">Bobina (Chapa)</option>
+            </select>
+
+            <div id="campos-dinamicos-bobine">
+                </div>
+
+            <button onclick="adicionarLancamentoBobine()" class="btn-save green" style="margin-top:10px;">ADICIONAR LANÇAMENTO</button>
+        </div>
+
+        <div id="lista-lancamentos-bobine"></div>
+
+        <div class="form-section" style="display: flex; gap: 10px;">
+            <button onclick="fimProducaoBobine()" class="btn-save blue">FIM DE PRODUÇÃO</button>
+            <button onclick="fecharDiaBobine()" class="btn-save" style="background: #c41e24;">FECHAR DIA / RELATÓRIO</button>
+        </div>
+    </div>
+
+    <div id="aba-bobine-historico" style="display:none;">
+        <div id="lista-historico-bobine"></div>
+    </div>
+</section>
 
             <section id="modulo-gestao" style="display:none;">
                 <button onclick="voltarHome()" class="btn-voltar">← Voltar</button>
