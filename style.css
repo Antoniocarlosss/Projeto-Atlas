@@ -1,3 +1,4 @@
+
 :root { --primary: #c41e24; --bg: #f0f2f5; }
 body { font-family: sans-serif; margin: 0; background: var(--bg); }
 body.tema-escuro { background: #1a1a1a; color: #fff; }
