@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas Painel - Gestão de Fábrica</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <section id="tela-login">
+        <div class="login-box">
+            <img src="logo.png" alt="Atlas" class="logo-login">
+            <input type="email" id="login-email" placeholder="E-mail">
+            <input type="password" id="login-senha" placeholder="Senha">
+            <button onclick="fazerLogin()" class="btn-primary">ENTRAR</button>
+        </div>
+    </section>
+
+    <div id="app-principal" style="display:none;">
+        <header class="no-print">
+            <img src="logo.png" alt="Atlas" class="logo-header">
+            <div class="user-info">
+                <span id="user-display"></span>
+                <button onclick="location.reload()" class="btn-logout">Sair</button>
+            </div>
+        </header>
+
+        <main class="no-print">
+            <section id="grid-home" class="grid-container">
+                <div class="card blue" onclick="abrirModulo('Injeção')"><i>⚙️</i><span>Injeção</span></div>
+                <div class="card orange"><i>🌀</i><span>Bobina</span></div>
+                <div class="card purple" id="card-gestao" onclick="abrirModulo('Gestão')"><i>👥</i><span>Gestão de Pessoas</span></div>
+                <div class="card gray" onclick="abrirModulo('Configuração')"><i>🛠️</i><span>Configuração</span></div>
+            </section>
+
+            <section id="modulo-gestao" style="display:none;">
+                <button onclick="voltarHome()" class="btn-voltar">← Voltar</button>
+                <div class="form-section">
+                    <h3>Monitoramento Real-Time</h3>
+                    <div id="lista-monitor"></div>
+                </div>
+                <div class="form-section">
+                    <h3>Cadastrar Usuário</h3>
+                    <input type="text" id="g-nome" placeholder="Nome">
+                    <input type="email" id="g-email" placeholder="E-mail">
+                    <input type="password" id="g-senha" placeholder="Senha">
+                    <select id="g-nivel">
+                        <option value="limitado">Operador</option>
+                        <option value="ilimitado">ADM</option>
+                    </select>
+                    <button onclick="salvarUsuario()" class="btn-save purple">CRIAR CONTA</button>
+                </div>
+                <div id="lista-usuarios"></div>
+            </section>
+
+            <section id="modulo-injecao" style="display:none;">
+                <button onclick="voltarHome()" class="btn-voltar">← Voltar</button>
+                <div class="tabs">
+                    <button class="tab-btn active" id="tab-rel" onclick="mudarAba('relatorio')">Produção</button>
+                    <button class="tab-btn" id="tab-hist" onclick="mudarAba('historico')">Histórico</button>
+                </div>
+
+                <div id="aba-relatorio">
+                    <div class="form-section">
+                        <label>Data:</label><input type="date" id="inj-data">
+                    </div>
+                    <div class="form-section highlight">
+                        <div class="form-row">
+                            <select id="inj-painel" class="col-8">
+                                <option value="Fachada Oculta">Fachada Oculta</option>
+                                <option value="5 Ondas">5 Ondas</option>
+                                <option value="Telha Canudo">Telha Canudo</option>
+                            </select>
+                            <input type="number" id="inj-esp" class="col-4" placeholder="mm">
+                        </div>
+                        <button onclick="iniciarRodada()" class="btn-save blue">ABRIR RODADA</button>
+                    </div>
+
+                    <div id="lista-rodadas"></div>
+
+                    <div id="area-edicao" class="form-section edit-box" style="display:none;">
+                        <input type="hidden" id="edit-idx">
+                        <div class="avaria-input">
+                            <label>Add Avaria:</label>
+                            <input type="time" id="ed-h">
+                            <input type="text" id="ed-t" placeholder="Descrição">
+                            <button onclick="addOcorrencia()" class="btn-small">INSERIR</button>
+                        </div>
+                        <div class="form-row">
+                            <input type="number" id="ed-m" placeholder="Metros">
+                            <input type="text" id="ed-v" placeholder="Velocidade">
+                        </div>
+                        <div class="grid-quimicos">
+                            <input type="number" id="q-mdi" placeholder="MDI">
+                            <input type="number" id="q-pur" placeholder="PUR">
+                            <input type="number" id="q-pir" placeholder="PIR">
+                            <input type="number" id="q-c1" placeholder="C1">
+                            <input type="number" id="q-c4" placeholder="C4">
+                            <input type="number" id="q-pent" placeholder="PENT">
+                        </div>
+                        <button onclick="salvarEdicao()" class="btn-save green" style="margin-top:10px;">SALVAR</button>
+                    </div>
+                    <button onclick="fecharPasta()" class="btn-primary" style="margin-top:20px; background: #c41e24;">FECHAR DIA</button>
+                </div>
+
+                <div id="aba-historico" style="display:none;"><div id="lista-pastas"></div></div>
+            </section>
+
+            <section id="modulo-config" style="display:none;">
+                <button onclick="voltarHome()" class="btn-voltar">← Voltar</button>
+                <button onclick="mudarTema('claro')" class="btn-save">MODO CLARO</button>
+                <button onclick="mudarTema('escuro')" class="btn-save" style="background:#333; margin-top:10px;">MODO ESCURO</button>
+            </section>
+        </main>
+
+        <div id="modal-pdf" class="modal">
+            <div class="modal-content">
+                <div id="conteudo-imprimivel">
+                    </div>
+                <div class="no-print" style="margin-top:30px; display:flex; gap:10px;">
+                    <button onclick="window.print()" class="btn-save blue">GERAR PDF / IMPRIMIR</button>
+                    <button onclick="document.getElementById('modal-pdf').style.display='none'" class="btn-logout">FECHAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
