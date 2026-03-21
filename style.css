@@ -31,3 +31,112 @@ input, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px sol
 #res-metros { color: #00ff9c; font-size: 24px; }
 #res-tempo { color: #ffd54f; font-size: 20px; }
 #res-hora { color: #ff6b6b; font-size: 18px; }
+/* Container do Histórico */
+#lista-historico-bobine {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* O Novo Card "Vivo" */
+.card-historico-vivo {
+    background: #ffffff; /* Fundo branco para destacar */
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08); /* Sombra suave */
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Detalhe colorido na lateral do card para dar "vida" */
+.card-historico-vivo::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 6px;
+    background: #c41e24; /* Vermelho Atlas */
+}
+
+.card-historico-vivo:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 15px rgba(196, 30, 36, 0.15);
+    border-color: #c41e24;
+}
+
+/* Textos dentro do Card */
+.hist-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.hist-data {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #1a1a1a;
+}
+
+.hist-op {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Badges (Etiquetas Coloridas) */
+.hist-badges {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.badge-filme {
+    background: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
+}
+
+.badge-view {
+    background: #f1f8e9;
+    color: #2e7d32;
+    border: 1px solid #c5e1a5;
+}
+
+/* Estilo para os botões de Aba (Lançamento / Histórico) */
+.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    border: none;
+    background: #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.tab-btn.active {
+    background: #c41e24;
+    color: white;
+}
