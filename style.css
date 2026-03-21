@@ -35,7 +35,7 @@ header { background: #000; color: #fff; padding: 10px 20px; display: flex; justi
 .col-8 { flex: 2; } .col-4 { flex: 1; }
 input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
 
-.btn-primary, .btn-save { border: none; padding: 12px; border-radius: 5px; color: #fff; font-weight: bold; cursor: pointer; width: 100%; }
+.btn-primary, .btn-save { border: none; padding: 12px; border-radius: 5px; color: #080808; font-weight: bold; cursor: pointer; width: 100%; }
 .blue { background: #2196f3; } .purple { background: #9c27b0; } .green { background: #27ae60; }
 
 .modal { display: none; position: fixed; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; overflow-y: auto; }
