@@ -27,6 +27,46 @@ function fazerLogin() {
         alert("E-mail ou senha incorretos!"); 
     }
 }
+// 1. Função para salvar as preferências do usuário
+function salvarVisibilidade() {
+    const checkboxes = document.querySelectorAll('.toggle-vis');
+    const preferencias = {};
+
+    checkboxes.forEach(chk => {
+        preferencias[chk.getAttribute('data-target')] = chk.checked;
+    });
+
+    localStorage.setItem('config_visibilidade', JSON.stringify(preferencias));
+    alert("Preferências de visualização salvas!");
+    aplicarVisibilidade(); // Aplica na hora
+}
+
+// 2. Função para ler o que está salvo e esconder os cards
+function aplicarVisibilidade() {
+    const prefs = JSON.parse(localStorage.getItem('config_visibilidade'));
+    
+    if (prefs) {
+        for (const [idCard, visivel] of Object.entries(prefs)) {
+            const el = document.getElementById(idCard);
+            const chk = document.querySelector(`[data-target="${idCard}"]`);
+            
+            if (el) {
+                el.style.display = visivel ? 'flex' : 'none';
+            }
+            
+            // Mantém o checkbox marcado corretamente na tela de configuração
+            if (chk) {
+                chk.checked = visivel;
+            }
+        }
+    }
+}
+
+// 3. Chame essa função dentro do seu DOMContentLoaded ou logo após o login
+// Exemplo:
+document.addEventListener("DOMContentLoaded", () => {
+    aplicarVisibilidade();
+});
 
 // --- NAVEGAÇÃO ---
 function abrirModulo(m) {
