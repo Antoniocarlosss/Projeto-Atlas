@@ -660,12 +660,12 @@ function toggleVisibility(inputId, iconElement) {
     const input = document.getElementById(inputId);
     
     if (input.type === 'password') {
-        // Mostra a senha
+        // Ação: Mostrar a senha
         input.type = 'text';
-        iconElement.textContent = '🙈'; // Muda o ícone para "macaco tapando os olhos" ou outro de sua preferência
+        iconElement.textContent = '👁️'; // Olho aberto = Senha visível
     } else {
-        // Esconde a senha
+        // Ação: Esconder a senha
         input.type = 'password';
-        iconElement.textContent = '👁️'; // Volta para o olho aberto
+        iconElement.textContent = '🔒'; // Cadeado fechado = Senha oculta
     }
 }
