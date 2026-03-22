@@ -296,3 +296,85 @@ input:focus, select:focus { border-color: var(--blue-vivid); outline: none; back
     display: inline-block;
     text-align: center;
 }
+/* --- ESTILOS ESPECÍFICOS PARA CONFIGURAÇÕES --- */
+
+/* Ajuste para a foto de perfil */
+.perfil-header {
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.avatar-circle {
+    border: 4px solid var(--black);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: transform 0.3s;
+}
+
+/* Estilo dos cards de seleção de tema na aba Aparência */
+.theme-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.theme-card-btn {
+    padding: 20px;
+    border-radius: 12px;
+    border: 3px solid #ccc;
+    cursor: pointer;
+    font-weight: 900;
+    text-align: center;
+    transition: 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.theme-card-btn:hover {
+    border-color: var(--blue-vivid);
+}
+
+/* Quando o tema está selecionado (podemos usar uma classe via JS se desejar) */
+.theme-card-btn.active {
+    border-color: var(--green-vivid);
+    background: #eafff0;
+}
+
+/* --- MODO ESCURO (VARIÁVEIS DE SOBREPOSIÇÃO) --- */
+body.tema-escuro {
+    --bg: #121212;
+    --white: #1e1e1e;
+    --black: #ffffff;
+    --gray-text: #e0e0e0;
+}
+
+body.tema-escuro .form-section {
+    background: #1e1e1e;
+    border-color: #444;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+body.tema-escuro input, 
+body.tema-escuro select {
+    background: #2d2d2d;
+    color: #fff;
+    border-color: #555;
+}
+
+body.tema-escuro .card {
+    background: #252525;
+    color: #fff;
+}
+
+/* Ajuste de contraste para textos pequenos no modo escuro */
+body.tema-escuro .form-section small,
+body.tema-escuro .form-section span {
+    color: #bbb;
+}
+
+/* Garantir que o header continue preto no modo escuro */
+body.tema-escuro header {
+    border-bottom: 1px solid #333;
+}
