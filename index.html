@@ -249,5 +249,12 @@
     </div>
 
     <script src="script.js"></script>
+    <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('ATLAS PAINEL: App Pronto!'))
+      .catch(err => console.log('Erro ao carregar App', err));
+  }
+</script>
 </body>
 </html>
