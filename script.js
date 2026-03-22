@@ -36,9 +36,14 @@ function abrirModulo(m) {
     if(m === 'Home') document.getElementById('grid-home').style.display = 'grid';
     if(m === 'Injeção') { document.getElementById('modulo-injecao').style.display = 'block'; atualizarLista(); }
     if(m === 'Bobines') document.getElementById('modulo-bobines').style.display = 'block';
+    
+    // NOVAS CONDIÇÕES
+    if(m === 'Serra') document.getElementById('modulo-serra').style.display = 'block';
+    if(m === 'Embalagem') document.getElementById('modulo-embalagem').style.display = 'block';
+    
     if(m === 'Gestão') { 
         document.getElementById('modulo-gestao').style.display = 'block'; 
-        listarUsuarios(); // Carrega a lista ao abrir
+        listarUsuarios(); 
     }
     if(m === 'Configuração') document.getElementById('modulo-config').style.display = 'block';
 }
