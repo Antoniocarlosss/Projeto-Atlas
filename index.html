@@ -28,12 +28,24 @@
         </header>
 
         <main class="no-print">
-            <section id="grid-home" class="grid-container">
-                <div class="card blue" onclick="abrirModulo('Injeção')"><i>⚙️</i><span>Injeção</span></div>
-                <div class="card orange" onclick="abrirModulo('Bobines')"><i>🌀</i><span>Bobines</span></div>
-                <div class="card purple" id="card-gestao" onclick="abrirModulo('Gestão')"><i>👥</i><span>Gestão de Pessoas</span></div>
-                <div class="card gray" onclick="abrirModulo('Configuração')"><i>🛠️</i><span>Configuração</span></div>
-            </section>
+           <section id="grid-home" class="grid-container">
+    <div class="card blue" onclick="abrirModulo('Injeção')"><i>⚙️</i><span>Injeção</span></div>
+    <div class="card orange" onclick="abrirModulo('Bobines')"><i>🌀</i><span>Bobines</span></div>
+    <div class="card red" onclick="abrirModulo('Serra')"><i>🪚</i><span>Serra</span></div>
+    <div class="card brown" onclick="abrirModulo('Embalagem')"><i>📦</i><span>Embalagem</span></div>
+    <div class="card purple" id="card-gestao" onclick="abrirModulo('Gestão')"><i>👥</i><span>Gestão de Pessoas</span></div>
+    <div class="card gray" onclick="abrirModulo('Configuração')"><i>🛠️</i><span>Configuração</span></div>
+</section>
+
+<section id="modulo-serra" style="display:none;">
+    <button onclick="voltarHome()" class="btn-voltar">← Voltar</button>
+    <div class="form-section"><h3>Módulo Serra</h3><p>Conteúdo em desenvolvimento...</p></div>
+</section>
+
+<section id="modulo-embalagem" style="display:none;">
+    <button onclick="voltarHome()" class="btn-voltar">← Voltar</button>
+    <div class="form-section"><h3>Módulo Embalagem</h3><p>Conteúdo em desenvolvimento...</p></div>
+</section>
 
             <section id="modulo-bobines" style="display:none;">
                 <button onclick="voltarHome()" class="btn-voltar">← Voltar</button>
