@@ -290,3 +290,9 @@ input:focus, select:focus { border-color: var(--blue-vivid); outline: none; back
 .toggle-eye:hover {
     opacity: 0.7;
 }
+.toggle-eye {
+    font-size: 1.1rem;
+    width: 25px; /* Largura fixa para o ícone não "pular" quando trocar */
+    display: inline-block;
+    text-align: center;
+}
