@@ -669,3 +669,56 @@ function toggleVisibility(inputId, iconElement) {
         iconElement.textContent = '🔒'; // Cadeado fechado = Senha oculta
     }
 }
+// --- NAVEGAÇÃO INTERNA DAS CONFIGURAÇÕES ---
+function mudarAbaConfig(aba) {
+    // Seleciona as seções e botões
+    const abaPerfil = document.getElementById('aba-config-perfil');
+    const abaAparencia = document.getElementById('aba-config-aparencia');
+    const btnPerfil = document.getElementById('tab-config-perfil');
+    const btnAparencia = document.getElementById('tab-config-aparencia');
+
+    // Esconde tudo primeiro
+    abaPerfil.style.display = 'none';
+    abaAparencia.style.display = 'none';
+    btnPerfil.classList.remove('active');
+    btnAparencia.classList.remove('active');
+
+    if (aba === 'perfil') {
+        abaPerfil.style.display = 'block';
+        btnPerfil.classList.add('active');
+        
+        // Preenche os dados do usuário logado nos campos
+        if (userLogado) {
+            document.getElementById('perfil-nome-display').innerText = userLogado.nome;
+            document.getElementById('perfil-nivel-display').innerText = userLogado.nivel === 'ilimitado' ? 'Administrador' : 'Operador';
+            document.getElementById('config-nome').value = userLogado.nome;
+        }
+    } else {
+        abaAparencia.style.display = 'block';
+        btnAparencia.classList.add('active');
+    }
+}
+function atualizarPerfil() {
+    const novoNome = document.getElementById('config-nome').value;
+    const novaSenha = document.getElementById('config-senha-nova').value;
+
+    if (!novoNome) return alert("O nome não pode estar vazio!");
+
+    // 1. Atualiza o objeto do usuário logado na memória
+    userLogado.nome = novoNome;
+    if (novaSenha) userLogado.senha = novaSenha;
+
+    // 2. Atualiza no Banco de Dados (Array principal)
+    const index = db_users.findIndex(u => u.email === userLogado.email);
+    if (index !== -1) {
+        db_users[index] = userLogado;
+        localStorage.setItem('atlas_users', JSON.stringify(db_users));
+    }
+
+    // 3. Atualiza a interface visual (Header e campos)
+    document.getElementById('user-display').innerText = userLogado.nome;
+    document.getElementById('perfil-nome-display').innerText = userLogado.nome;
+    document.getElementById('config-senha-nova').value = ""; // limpa campo senha
+
+    alert("Perfil atualizado com sucesso!");
+}
