@@ -224,3 +224,39 @@ input:focus, select:focus { border-color: var(--blue-vivid); outline: none; back
     .card { padding: 40px 10px; }
     .btn-save, .btn-primary { width: 100%; }
 }
+/* Isso garante que o padding não "empurre" o input para fora */
+* {
+    box-sizing: border-box;
+}
+
+.login-box { 
+    background: var(--white); 
+    padding: 40px 30px; 
+    border-radius: 12px; 
+    width: 350px; /* Aumentei um pouco para dar mais respiro */
+    text-align: center; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centraliza os itens internamente */
+}
+
+.login-box input { 
+    width: 100%; /* Agora ele vai respeitar exatamente a largura da caixa */
+    max-width: 100%;
+    padding: 15px; 
+    margin-bottom: 15px; 
+    border: 2px solid #ddd; 
+    border-radius: 8px; 
+    font-size: 1rem; 
+    font-weight: bold;
+    color: var(--black);
+    display: block; /* Garante que ocupem linhas separadas */
+}
+
+/* Ajuste do botão para ficar exatamente do mesmo tamanho dos inputs */
+.login-box .btn-primary {
+    width: 100%;
+    padding: 16px;
+    margin-top: 10px;
+}
