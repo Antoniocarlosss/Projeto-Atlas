@@ -655,3 +655,17 @@ function gerarVisualizacaoRelatorioInjecao(rel) {
     `;
     janela.document.write(conteudo);
 }
+// --- FUNÇÃO PARA MOSTRAR/ESCONDER SENHA ---
+function toggleVisibility(inputId, iconElement) {
+    const input = document.getElementById(inputId);
+    
+    if (input.type === 'password') {
+        // Mostra a senha
+        input.type = 'text';
+        iconElement.textContent = '🙈'; // Muda o ícone para "macaco tapando os olhos" ou outro de sua preferência
+    } else {
+        // Esconde a senha
+        input.type = 'password';
+        iconElement.textContent = '👁️'; // Volta para o olho aberto
+    }
+}
