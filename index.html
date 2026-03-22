@@ -40,10 +40,11 @@
 
         <main class="no-print">
            <section id="grid-home" class="grid-container">
-    <div class="card blue" onclick="abrirModulo('Injeção')"><i>⚙️</i><span>Injeção</span></div>
-    <div class="card orange" onclick="abrirModulo('Bobines')"><i>🌀</i><span>Bobines</span></div>
-    <div class="card red" onclick="abrirModulo('Serra')"><i>🪚</i><span>Serra</span></div>
-    <div class="card brown" onclick="abrirModulo('Embalagem')"><i>📦</i><span>Embalagem</span></div>
+    <div id="card-injecao" class="card blue" onclick="abrirModulo('Injeção')"><i>⚙️</i><span>Injeção</span></div>
+    <div id="card-bobines" class="card orange" onclick="abrirModulo('Bobines')"><i>🌀</i><span>Bobines</span></div>
+    <div id="card-serra" class="card red" onclick="abrirModulo('Serra')"><i>🪚</i><span>Serra</span></div>
+    <div id="card-embalagem" class="card brown" onclick="abrirModulo('Embalagem')"><i>📦</i><span>Embalagem</span></div>
+    
     <div class="card purple" id="card-gestao" onclick="abrirModulo('Gestão')"><i>👥</i><span>Gestão de Pessoas</span></div>
     <div class="card gray" onclick="abrirModulo('Configuração')"><i>🛠️</i><span>Configuração</span></div>
 </section>
@@ -247,6 +248,19 @@
                     <option value="compacto">Compacto</option>
                     <option value="grande">Grande (Acessibilidade)</option>
                 </select>
+                <div style="margin-top: 25px; border-top: 1px solid #ddd; pt-15px;">
+    <h3>Personalizar Home</h3>
+    <p>Selecione os módulos que deseja ver no menu principal:</p>
+    
+    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+        <label><input type="checkbox" class="toggle-vis" data-target="card-injecao" checked> Injeção</label>
+        <label><input type="checkbox" class="toggle-vis" data-target="card-bobines" checked> Bobines</label>
+        <label><input type="checkbox" class="toggle-vis" data-target="card-serra" checked> Serra</label>
+        <label><input type="checkbox" class="toggle-vis" data-target="card-embalagem" checked> Embalagem</label>
+    </div>
+    
+    <button onclick="salvarVisibilidade()" class="btn-save blue" style="margin-top: 15px;">SALVAR VISIBILIDADE</button>
+</div>
             </div>
         </div>
     </div>
