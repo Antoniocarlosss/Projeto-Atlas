@@ -10,12 +10,17 @@
 
     <section id="tela-login">
         <div class="login-box">
-            <img src="logo.png" alt="Atlas" class="logo-login">
-            <h1>Acesso Restrito</h1>
-            <input type="email" id="login-email" placeholder="ID Do Usuário">
-            <input type="password" id="login-senha" placeholder="Senha">
-            <button onclick="fazerLogin()" class="btn-primary">ENTRAR</button>
-        </div>
+    <img src="logo.png" alt="Atlas" class="logo-login">
+    <h1>Acesso Restrito</h1>
+    <input type="email" id="login-email" placeholder="ID Do Usuário">
+    
+    <div class="input-wrapper">
+        <input type="password" id="login-senha" placeholder="Senha">
+        <span class="toggle-eye" onclick="toggleVisibility('login-senha', this)">👁️</span>
+    </div>
+    
+    <button onclick="fazerLogin()" class="btn-primary">ENTRAR</button>
+</div>
     </section>
 
     <div id="app-principal" style="display:none;">
@@ -122,13 +127,18 @@
                 </div>
                 <div class="form-section">
                     <h3>Cadastrar Usuário</h3>
-                    <input type="text" id="g-nome" placeholder="Nome">
-                    <input type="email" id="g-email" placeholder="ID Do Usuário">
-                    <input type="password" id="g-senha" placeholder="Senha">
-                    <select id="g-nivel">
-                        <option value="limitado">Operador</option>
-                        <option value="ilimitado">ADM</option>
-                    </select>
+<input type="text" id="g-nome" placeholder="Nome">
+<input type="email" id="g-email" placeholder="ID Do Usuário">
+
+<div class="input-wrapper">
+    <input type="password" id="g-senha" placeholder="Senha">
+    <span class="toggle-eye" onclick="toggleVisibility('g-senha', this)">👁️</span>
+</div>
+
+<select id="g-nivel">
+    <option value="limitado">Operador</option>
+    <option value="ilimitado">ADM</option>
+</select>
                     <button onclick="salvarUsuario()" class="btn-save purple">CRIAR CONTA</button>
                 </div>
                 <div id="lista-usuarios"></div>
