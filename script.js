@@ -27,46 +27,6 @@ function fazerLogin() {
         alert("E-mail ou senha incorretos!"); 
     }
 }
-// 1. Função para salvar as preferências do usuário
-function salvarVisibilidade() {
-    const checkboxes = document.querySelectorAll('.toggle-vis');
-    const preferencias = {};
-
-    checkboxes.forEach(chk => {
-        preferencias[chk.getAttribute('data-target')] = chk.checked;
-    });
-
-    localStorage.setItem('config_visibilidade', JSON.stringify(preferencias));
-    alert("Preferências de visualização salvas!");
-    aplicarVisibilidade(); // Aplica na hora
-}
-
-// 2. Função para ler o que está salvo e esconder os cards
-function aplicarVisibilidade() {
-    const prefs = JSON.parse(localStorage.getItem('config_visibilidade'));
-    
-    if (prefs) {
-        for (const [idCard, visivel] of Object.entries(prefs)) {
-            const el = document.getElementById(idCard);
-            const chk = document.querySelector(`[data-target="${idCard}"]`);
-            
-            if (el) {
-                el.style.display = visivel ? 'flex' : 'none';
-            }
-            
-            // Mantém o checkbox marcado corretamente na tela de configuração
-            if (chk) {
-                chk.checked = visivel;
-            }
-        }
-    }
-}
-
-// 3. Chame essa função dentro do seu DOMContentLoaded ou logo após o login
-// Exemplo:
-document.addEventListener("DOMContentLoaded", () => {
-    aplicarVisibilidade();
-});
 
 // --- NAVEGAÇÃO ---
 function abrirModulo(m) {
@@ -761,4 +721,664 @@ function atualizarPerfil() {
     document.getElementById('config-senha-nova').value = ""; // limpa campo senha
 
     alert("Perfil atualizado com sucesso!");
+}
+// 1. Função para salvar as preferências do usuário
+function salvarVisibilidade() {
+    const checkboxes = document.querySelectorAll('.toggle-vis');
+    const preferencias = {};
+
+    checkboxes.forEach(chk => {
+        preferencias[chk.getAttribute('data-target')] = chk.checked;
+    });
+
+    localStorage.setItem('config_visibilidade', JSON.stringify(preferencias));
+    alert("Preferências de visualização salvas!");
+    aplicarVisibilidade(); // Aplica na hora
+}
+
+// 2. Função para ler o que está salvo e esconder os cards
+function aplicarVisibilidade() {
+    const prefs = JSON.parse(localStorage.getItem('config_visibilidade'));
+    
+    if (prefs) {
+        for (const [idCard, visivel] of Object.entries(prefs)) {
+            const el = document.getElementById(idCard);
+            const chk = document.querySelector(`[data-target="${idCard}"]`);
+            
+            if (el) {
+                el.style.display = visivel ? 'flex' : 'none';
+            }
+            
+            // Mantém o checkbox marcado corretamente na tela de configuração
+            if (chk) {
+                chk.checked = visivel;
+            }
+        }
+    }
+}
+
+// 3. Chame essa função dentro do seu DOMContentLoaded ou logo após o login
+// Exemplo:
+document.addEventListener("DOMContentLoaded", () => {
+    aplicarVisibilidade();
+});
+// --- 1. BANCO DE DADOS E ESTADO ---
+let db_serra_live = JSON.parse(localStorage.getItem('atlas_serra_live')) || [];
+let db_serra_hist = JSON.parse(localStorage.getItem('atlas_serra_hist')) || [];
+let serra_modo_atual = 'pedido'; 
+
+// --- 2. CONTROLE DE ABAS ---
+function mudarAbaSerra(aba) {
+    document.getElementById('aba-serra-producao').style.display = aba === 'producao' ? 'block' : 'none';
+    document.getElementById('aba-serra-historico').style.display = aba === 'historico' ? 'block' : 'none';
+    
+    document.getElementById('tab-serra-prod').classList.toggle('active', aba === 'producao');
+    document.getElementById('tab-serra-hist').classList.toggle('active', aba === 'historico');
+
+    if(aba === 'historico') listarHistoricoSerra();
+}
+
+// --- 3. LÓGICA DE PRODUÇÃO ---
+function iniciarProducaoSerra() {
+    const tipo = document.getElementById('serra-tipo-chapa').value;
+    const esp = document.getElementById('serra-espessura').value;
+
+    if (!tipo || !esp) return alert("Selecione Tipo e Espessura!");
+
+    document.getElementById('serra-setup-header').style.display = 'none';
+    document.getElementById('serra-form-lancamento').style.display = 'block';
+    document.getElementById('lista-serra-temp').style.display = 'block';
+    
+    document.getElementById('resumo-config-ativa').innerText = `AGORA: ${tipo} ${esp}mm`;
+    selecionarModoSerra(serra_modo_atual);
+    atualizarListaSerra();
+}
+
+function selecionarModoSerra(modo) {
+    serra_modo_atual = modo;
+    const campos = document.getElementById('campos-dinamicos-serra');
+    const rals = `<option value="9010">9010</option><option value="3009">3009</option><option value="9005">9005</option><option value="7016">7016</option>`;
+
+    if (modo === 'pedido') {
+        campos.innerHTML = `
+            <input type="text" id="serra-pedido" placeholder="Nº Pedido" style="width:100%; margin-bottom:10px; background:#444; color:white; padding:10px; border:1px solid #666;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                <select id="serra-ral-sup" style="background:#444; color:white; padding:10px;">${rals}</select>
+                <select id="serra-ral-inf" style="background:#444; color:white; padding:10px;">${rals}</select>
+            </div>
+            <input type="number" id="serra-comp" placeholder="Metros" oninput="calcSerraPrevia()" style="width:100%; background:#444; color:white; padding:10px; border:1px solid #666;">
+            <input type="hidden" id="serra-qtd" value="1">
+            <div id="serra-previa" style="text-align:right; color:#4caf50; font-size:12px; margin-top:5px;">Total: 0.00m</div>
+        `;
+    } else {
+        campos.innerHTML = `
+            <select id="serra-qualidade" onchange="toggleSerraDescarte(this.value)" style="width:100%; margin-bottom:10px; background:#444; color:white; padding:10px;">
+                <option value="P1">P1</option><option value="P2">P2</option><option value="PPC">PPC</option><option value="Descarte">Descarte</option>
+            </select>
+            <div id="area-stock-rals" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                <select id="serra-ral-sup" style="background:#444; color:white; padding:10px;">${rals}</select>
+                <select id="serra-ral-inf" style="background:#444; color:white; padding:10px;">${rals}</select>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <input type="number" id="serra-qtd" placeholder="Qtd" oninput="calcSerraPrevia()" style="background:#444; color:white; padding:10px; border:1px solid #666;">
+                <input type="number" id="serra-comp" placeholder="Metros" oninput="calcSerraPrevia()" style="background:#444; color:white; padding:10px; border:1px solid #666;">
+            </div>
+            <div id="serra-previa" style="text-align:right; color:#4caf50; font-size:12px; margin-top:5px;">Total: 0.00m</div>
+        `;
+    }
+    document.getElementById('btn-modo-pedido').style.background = modo === 'pedido' ? '#2196f3' : '#444';
+    document.getElementById('btn-modo-stock').style.background = modo === 'stock' ? '#2196f3' : '#444';
+}
+
+function calcSerraPrevia() {
+    const q = parseFloat(document.getElementById('serra-qtd').value) || 0;
+    const m = parseFloat(document.getElementById('serra-comp').value) || 0;
+    document.getElementById('serra-previa').innerText = `Total: ${(q * m).toFixed(2)}m`;
+}
+
+function inserirLinhaSerra() {
+    const m = parseFloat(document.getElementById('serra-comp').value);
+    const q = parseFloat(document.getElementById('serra-qtd').value);
+    const tipo = document.getElementById('serra-tipo-chapa').value;
+    const esp = document.getElementById('serra-espessura').value;
+
+    if (!m || !q) return alert("Preencha os valores corretamente!");
+
+    let info = "";
+    if (serra_modo_atual === 'pedido') {
+        const ped = document.getElementById('serra-pedido').value || "S/N";
+        info = `PED: ${ped} | RAL: ${document.getElementById('serra-ral-sup').value}/${document.getElementById('serra-ral-inf').value}`;
+    } else {
+        const qual = document.getElementById('serra-qualidade').value;
+        info = qual === 'Descarte' ? `DESCARTE` : `${qual} | RAL: ${document.getElementById('serra-ral-sup').value}/${document.getElementById('serra-ral-inf').value}`;
+    }
+
+    db_serra_live.push({
+        tipo, esp, detalhes: info, metros: (m * q).toFixed(2),
+        hora: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+    });
+    
+    localStorage.setItem('atlas_serra_live', JSON.stringify(db_serra_live));
+    document.getElementById('serra-comp').value = "";
+    if(serra_modo_atual === 'stock') document.getElementById('serra-qtd').value = "";
+    document.getElementById('serra-previa').innerText = "Total: 0.00m";
+    atualizarListaSerra();
+}
+
+function atualizarListaSerra() {
+    const corpo = document.getElementById('tabela-serra-corpo');
+    let totalGeral = 0;
+    let html = "";
+    const espessuras = [...new Set(db_serra_live.map(it => it.esp))];
+
+    espessuras.forEach(e => {
+        const itens = db_serra_live.filter(it => it.esp === e);
+        let sub = 0;
+        html += `<div style="background:#444; color:#ffeb3b; padding:8px; margin-top:10px; border-radius:4px;">ESPESSURA: ${e}mm</div>`;
+        itens.forEach(it => {
+            sub += parseFloat(it.metros);
+            totalGeral += parseFloat(it.metros);
+            html += `
+                <div style="background:#333; padding:10px; margin-top:5px; display:flex; justify-content:space-between; border-radius:4px; border-left:4px solid #c41e24;">
+                    <span>${it.metros}m - <small>${it.detalhes}</small></span>
+                    <button onclick="removerItemSerra(${db_serra_live.indexOf(it)})" style="color:red; background:none; border:none; font-weight:bold; cursor:pointer;">X</button>
+                </div>`;
+        });
+        html += `<div style="text-align:right; font-size:11px; color:#4caf50;">Sub-total ${e}mm: ${sub.toFixed(2)}m</div>`;
+    });
+
+    corpo.innerHTML = html;
+    document.getElementById('soma-metros-serra').innerText = totalGeral.toFixed(2);
+}
+
+function removerItemSerra(i) {
+    db_serra_live.splice(i, 1);
+    localStorage.setItem('atlas_serra_live', JSON.stringify(db_serra_live));
+    atualizarListaSerra();
+}
+
+function finalizarEspessuraSerra() {
+    if(confirm("Mudar espessura? A lista atual será mantida.")) {
+        document.getElementById('serra-form-lancamento').style.display = 'none';
+        document.getElementById('serra-setup-header').style.display = 'block';
+    }
+}
+
+function fecharDiaSerra() {
+    if (db_serra_live.length === 0) return alert("Lista vazia!");
+    if (confirm("Encerrar dia e gerar relatório?")) {
+        const rel = {
+            data: new Date().toLocaleDateString(),
+            total_geral: document.getElementById('soma-metros-serra').innerText,
+            itens: [...db_serra_live]
+        };
+        db_serra_hist.push(rel);
+        localStorage.setItem('atlas_serra_hist', JSON.stringify(db_serra_hist));
+        db_serra_live = [];
+        localStorage.setItem('atlas_serra_live', "[]");
+        location.reload();
+    }
+}
+
+function listarHistoricoSerra() {
+    const lista = document.getElementById('lista-historico-serra');
+    if (db_serra_hist.length === 0) {
+        lista.innerHTML = "<p style='text-align:center; padding:20px;'>Sem registros.</p>";
+        return;
+    }
+    lista.innerHTML = db_serra_hist.map((h, i) => `
+        <div onclick='gerarPDFSerra(${i})' style="background:#333; padding:15px; margin-bottom:10px; border-radius:8px; cursor:pointer; border-left:5px solid #c41e24;">
+            <strong>Data: ${h.data}</strong> | <span style="color:#4caf50;">Total: ${h.total_geral}m</span>
+        </div>
+    `).reverse().join('');
+}
+
+function gerarPDFSerra(index) {
+    const rel = db_serra_hist[index];
+    const janela = window.open('', '_blank');
+    const espessuras = [...new Set(rel.itens.map(it => it.esp))];
+    let tabelas = "";
+
+    espessuras.forEach(e => {
+        const itens = rel.itens.filter(it => it.esp === e);
+        let sub = 0;
+        tabelas += `
+            <h3 style="background:#eee; padding:5px;">ESPESSURA: ${e}mm</h3>
+            <table border="1" style="width:100%; border-collapse:collapse; margin-bottom:10px;">
+                <tr><th>Hora</th><th>Tipo</th><th>Detalhes</th><th>Metros</th></tr>
+                ${itens.map(it => {
+                    sub += parseFloat(it.metros);
+                    return `<tr><td align="center">${it.hora}</td><td align="center">${it.tipo}</td><td>${it.detalhes}</td><td align="center">${it.metros}m</td></tr>`;
+                }).join('')}
+                <tr style="background:#f9f9f9;"><td colspan="3" align="right"><b>Sub-total ${e}mm:</b></td><td align="center"><b>${sub.toFixed(2)}m</b></td></tr>
+            </table>`;
+    });
+
+    janela.document.write(`
+        <html><body style="font-family:sans-serif; padding:20px;">
+            <h1 style="text-align:center; border-bottom:2px solid #c41e24;">RELATÓRIO SERRA - ${rel.data}</h1>
+            ${tabelas}
+            <div style="margin-top:20px; text-align:right; font-size:1.5rem; border-top:2px solid #000;">
+                TOTAL GERAL DO DIA: <strong>${rel.total_geral} metros</strong>
+            </div>
+            <script>window.print();</script>
+        </body></html>`);
+}
+
+function toggleSerraDescarte(v) {
+    document.getElementById('area-stock-rals').style.display = v === 'Descarte' ? 'none' : 'grid';
+}
+// --- CORREÇÃO DA FUNÇÃO DE FECHAR DIA (SEM DESLOGAR) ---
+function fecharDiaSerra() {
+    if (db_serra_live.length === 0) return alert("Lista vazia!");
+    
+    if (confirm("Encerrar produção e salvar no histórico?")) {
+        // Calcula o total real antes de salvar
+        const totalCalculado = document.getElementById('soma-metros-serra').innerText;
+        
+        const rel = {
+            data: new Date().toLocaleDateString(),
+            hora: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+            total_geral: totalCalculado, // Nome exato para o PDF não dar undefined
+            itens: [...db_serra_live]
+        };
+
+        db_serra_hist.push(rel);
+        localStorage.setItem('atlas_serra_hist', JSON.stringify(db_serra_hist));
+        
+        // Limpa a lista live
+        db_serra_live = [];
+        localStorage.setItem('atlas_serra_live', "[]");
+
+        alert("Produção finalizada com sucesso!");
+        
+        // Em vez de location.reload() (que desloga), apenas limpamos a tela e mudamos de aba
+        atualizarListaSerra();
+        document.getElementById('serra-form-lancamento').style.display = 'none';
+        document.getElementById('serra-setup-header').style.display = 'block';
+        mudarAbaSerra('historico'); 
+    }
+}
+
+// --- CORREÇÃO DO PDF (PARA MOSTRAR OS METROS CORRETAMENTE) ---
+function gerarPDFSerra(index) {
+    const rel = db_serra_hist[index];
+    const janela = window.open('', '_blank');
+    
+    // Identificar espessuras únicas
+    const espessuras = [...new Set(rel.itens.map(it => it.esp))];
+    let tabelas = "";
+    let somaTotalConfirmada = 0;
+
+    espessuras.forEach(e => {
+        const itens = rel.itens.filter(it => it.esp === e);
+        let sub = 0;
+        
+        tabelas += `
+            <h3 style="background:#eee; padding:8px; border-left:5px solid #c41e24; font-family:sans-serif;">ESPESSURA: ${e}mm</h3>
+            <table border="1" style="width:100%; border-collapse:collapse; font-family:sans-serif; margin-bottom:10px;">
+                <tr style="background:#f4f4f4;">
+                    <th style="padding:8px;">Hora</th>
+                    <th style="padding:8px;">Tipo</th>
+                    <th style="padding:8px;">Detalhes</th>
+                    <th style="padding:8px;">Metros</th>
+                </tr>
+                ${itens.map(it => {
+                    const m = parseFloat(it.metros) || 0;
+                    sub += m;
+                    somaTotalConfirmada += m;
+                    return `<tr>
+                        <td align="center" style="padding:5px;">${it.hora || '--:--'}</td>
+                        <td align="center" style="padding:5px;">${it.tipo || 'Serra'}</td>
+                        <td style="padding:5px;">${it.detalhes}</td>
+                        <td align="center" style="padding:5px;">${m.toFixed(2)}m</td>
+                    </tr>`;
+                }).join('')}
+                <tr style="background:#fff9c4;">
+                    <td colspan="3" align="right" style="padding:8px;"><b>Sub-total ${e}mm:</b></td>
+                    <td align="center"><b>${sub.toFixed(2)}m</b></td>
+                </tr>
+            </table>`;
+    });
+
+    // Se o total_geral veio errado do banco, usamos a soma total confirmada agora
+    const totalExibir = rel.total_geral && rel.total_geral !== "undefined" ? rel.total_geral : somaTotalConfirmada.toFixed(2);
+
+    janela.document.write(`
+        <html>
+        <head><title>Relatório Serra</title></head>
+        <body style="padding:20px; font-family:sans-serif;">
+            <h1 style="text-align:center; border-bottom:2px solid #c41e24; padding-bottom:10px;">RELATÓRIO SERRA - ${rel.data}</h1>
+            ${tabelas}
+            <div style="margin-top:20px; text-align:right; font-size:1.4rem; border-top:2px solid #000; padding-top:10px;">
+                TOTAL GERAL DO DIA: <strong>${totalExibir} metros</strong>
+            </div>
+            <script>window.print();</script>
+        </body>
+        </html>`);
+    janela.document.close();
+}
+// --- FUNÇÃO PARA GERAR PDF (AGORA COM LOGOTIPO) ---
+function gerarRelatorioSerra(rel) {
+    const janela = window.open('', '_blank');
+    
+    // Identificar espessuras únicas
+    const espessuras = [...new Set(rel.itens.map(it => it.esp))];
+    let tabelas = "";
+    let somaTotalConfirmada = 0;
+
+    espessuras.forEach(e => {
+        const itens = rel.itens.filter(it => it.esp === e);
+        let sub = 0;
+        
+        tabelas += `
+            <h3 style="background:#eee; padding:8px; border-left:5px solid #c41e24; font-family:sans-serif; margin-top:20px;">ESPESSURA: ${e}mm</h3>
+            <table border="1" style="width:100%; border-collapse:collapse; font-family:sans-serif; margin-bottom:10px;">
+                <tr style="background:#f4f4f4;">
+                    <th style="padding:8px; width: 10%;">Hora</th>
+                    <th style="padding:8px; width: 15%;">Tipo</th>
+                    <th style="padding:8px;">Detalhes</th>
+                    <th style="padding:8px; width: 15%;">Metros</th>
+                </tr>
+                ${itens.map(it => {
+                    const m = parseFloat(it.metros) || 0;
+                    sub += m;
+                    somaTotalConfirmada += m;
+                    return `<tr>
+                        <td align="center" style="padding:5px;">${it.hora || '--:--'}</td>
+                        <td align="center" style="padding:5px;">${it.tipo || 'Serra'}</td>
+                        <td style="padding:5px;">${it.detalhes}</td>
+                        <td align="center" style="padding:5px;">${m.toFixed(2)}m</td>
+                    </tr>`;
+                }).join('')}
+                <tr style="background:#fff9c4;">
+                    <td colspan="3" align="right" style="padding:8px;"><b>Sub-total ${e}mm:</b></td>
+                    <td align="center"><b>${sub.toFixed(2)}m</b></td>
+                </tr>
+            </table>`;
+    });
+
+    // Se o total_geral veio errado do banco, usamos a soma total confirmada agora
+    const totalExibir = rel.total_geral && rel.total_geral !== "undefined" ? rel.total_geral : somaTotalConfirmada.toFixed(2);
+
+    janela.document.write(`
+        <html>
+        <head>
+            <title>Relatório Serra Atlas Painel</title>
+            <style>
+                body { padding: 20px; font-family: sans-serif; color: #333; }
+                
+                /* Estilização do Cabeçalho com Logo */
+                .cabecalho {
+                    display: flex;
+                    align-items: center; /* Alinha o logo e o título verticalmente */
+                    justify-content: space-between; /* Espaça o logo e o título */
+                    border-bottom: 3px solid #c41e24; /* Linha decorativa vermelha */
+                    padding-bottom: 15px;
+                    margin-bottom: 25px;
+                }
+                
+                .logo-container img {
+                    max-height: 60px; /* Limita a altura do logo para não ocupar muito espaço */
+                    display: block;
+                }
+                
+                .titulo-container h1 {
+                    margin: 0;
+                    font-size: 1.6rem;
+                    text-align: right; /* Título alinhado à direita */
+                }
+                
+                .info-relatorio {
+                    margin-top: 5px;
+                    font-size: 1.1rem;
+                }
+
+                .total-container {
+                    margin-top: 30px;
+                    text-align: right;
+                    font-size: 1.5rem;
+                    border-top: 2px solid #000;
+                    padding-top: 15px;
+                }
+
+                @media print {
+                    .no-print { display: none; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="cabecalho">
+                <div class="logo-container">
+                    <src="img/logo.png" alt="Logo Atlas Painel">
+                    </div>
+                <div class="titulo-container">
+                    <h1>RELATÓRIO DE PRODUÇÃO - SERRA</h1>
+                    <div class="info-relatorio">
+                        Data: <strong>${rel.data}</strong> | Operador: <strong>${rel.operador}</strong>
+                    </div>
+                </div>
+            </div>
+
+            ${tabelas}
+
+            <div class="total-container">
+                TOTAL GERAL DO DIA: <strong>${totalExibir} metros</strong>
+            </div>
+
+            <button onclick="window.print()" class="no-print" style="margin-top: 25px; padding: 12px 24px; background: #c41e24; color: white; border: none; cursor: pointer; border-radius: 5px; font-weight: bold;">
+                🖨️ Imprimir / Salvar PDF
+            </button>
+        </body>
+        </html>`);
+    janela.document.close();
+}
+function gerarPDFSerra(index) {
+    const rel = db_serra_hist[index];
+    const janela = window.open('', '_blank');
+    
+    // Identificar espessuras únicas
+    const espessuras = [...new Set(rel.itens.map(it => it.esp))];
+    let tabelas = "";
+    let somaTotalConfirmada = 0;
+
+    espessuras.forEach(e => {
+        const itens = rel.itens.filter(it => it.esp === e);
+        let sub = 0;
+        
+        tabelas += `
+            <h3 style="background:#f4f4f4; padding:8px; border-left:5px solid #c41e24; font-family:sans-serif; margin-top:20px;">ESPESSURA: ${e}mm</h3>
+            <table border="1" style="width:100%; border-collapse:collapse; font-family:sans-serif; margin-bottom:10px;">
+                <tr style="background:#eee;">
+                    <th style="padding:8px; width: 10%;">Hora</th>
+                    <th style="padding:8px; width: 15%;">Tipo</th>
+                    <th style="padding:8px;">Detalhes</th>
+                    <th style="padding:8px; width: 15%;">Metros</th>
+                </tr>
+                ${itens.map(it => {
+                    const m = parseFloat(it.metros) || 0;
+                    sub += m;
+                    somaTotalConfirmada += m;
+                    return `<tr>
+                        <td align="center" style="padding:5px;">${it.hora || '--:--'}</td>
+                        <td align="center" style="padding:5px;">${it.tipo || 'Serra'}</td>
+                        <td style="padding:5px;">${it.detalhes || it.detalhe}</td>
+                        <td align="center" style="padding:5px;">${m.toFixed(2)}m</td>
+                    </tr>`;
+                }).join('')}
+                <tr style="background:#fff9c4;">
+                    <td colspan="3" align="right" style="padding:8px;"><b>Sub-total ${e}mm:</b></td>
+                    <td align="center"><b>${sub.toFixed(2)}m</b></td>
+                </tr>
+            </table>`;
+    });
+
+    const totalExibir = rel.total_geral && rel.total_geral !== "undefined" ? rel.total_geral : somaTotalConfirmada.toFixed(2);
+
+    janela.document.write(`
+        <html>
+        <head>
+            <title>Relatório Serra Atlas Painel</title>
+            <style>
+                body { padding: 30px; font-family: sans-serif; color: #333; }
+                .header-table { width: 100%; border-bottom: 3px solid #c41e24; margin-bottom: 20px; padding-bottom: 10px; }
+                .logo { max-height: 80px; }
+                .titulo-relatorio { text-align: right; }
+                .titulo-relatorio h1 { margin: 0; color: #000; font-size: 22px; }
+                .total-box { margin-top: 30px; text-align: right; font-size: 1.5rem; border-top: 2px solid #000; padding-top: 10px; }
+                @media print { .no-print { display: none; } }
+            </style>
+        </head>
+        <body>
+            <table class="header-table">
+                <tr>
+                    <td width="30%">
+                        <img src="logo.png" class="logo" onerror="this.src='https://via.placeholder.com/150x60?text=Logo+Nao+Encontrado'">
+                    </td>
+                    <td class="titulo-relatorio">
+                        <h1>RELATÓRIO DE PRODUÇÃO - SERRA</h1>
+                        <p>Data: <strong>${rel.data}</strong> | Turno: <strong>Geral</strong></p>
+                    </td>
+                </tr>
+            </table>
+
+            ${tabelas}
+
+            <div class="total-box">
+                TOTAL GERAL DO DIA: <strong>${totalExibir} metros</strong>
+            </div>
+
+            <p style="margin-top: 60px; text-align: center;">________________________________________________<br>Assinatura Responsável</p>
+
+            <button onclick="window.print()" class="no-print" style="margin-top: 20px; padding: 10px 20px; background: #c41e24; color: white; border: none; cursor: pointer; border-radius: 5px; font-weight: bold;">
+                🖨️ IMPRIMIR RELATÓRIO
+            </button>
+        </body>
+        </html>`);
+    janela.document.close();
+}
+function fecharDiaSerra() {
+    if (db_serra_live.length === 0) return alert("Não há produção para salvar!");
+
+    if (confirm("Deseja encerrar a produção da Serra e gerar o relatório?")) {
+        // Captura o nome do usuário logado (ajuste 'userLogado.nome' se sua variável for diferente)
+        const nomeOperador = (typeof userLogado !== 'undefined' && userLogado.nome) ? userLogado.nome : "Operador Geral";
+
+        const relatorio = {
+            id: Date.now(),
+            data: new Date().toLocaleDateString(),
+            hora: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            operador: nomeOperador, // Salva o nome do usuário aqui
+            total_geral: document.getElementById('soma-metros-serra').innerText,
+            itens: [...db_serra_live]
+        };
+
+        db_serra_hist.push(relatorio);
+        localStorage.setItem('atlas_serra_hist', JSON.stringify(db_serra_hist));
+
+        db_serra_live = [];
+        localStorage.setItem('atlas_serra_live', JSON.stringify(db_serra_live));
+
+        alert("Relatório salvo no histórico!");
+        
+        // Atualiza a tela sem dar reload (para não deslogar)
+        atualizarListaSerra();
+        document.getElementById('serra-form-lancamento').style.display = 'none';
+        document.getElementById('serra-setup-header').style.display = 'block';
+        mudarAbaSerra('historico');
+    }
+}
+function gerarPDFSerra(index) {
+    const rel = db_serra_hist[index];
+    const janela = window.open('', '_blank');
+    
+    const espessuras = [...new Set(rel.itens.map(it => it.esp))];
+    let tabelasHtml = "";
+    let somaReal = 0;
+
+    espessuras.forEach(esp => {
+        const itensFiltrados = rel.itens.filter(it => it.esp === esp);
+        let somaEsp = 0;
+
+        tabelasHtml += `
+            <div style="margin-top: 20px;">
+                <h3 style="background: #f4f4f4; padding: 8px; border-left: 5px solid #c41e24; font-family: sans-serif;">
+                    ESPESSURA: ${esp}mm
+                </h3>
+                <table style="width: 100%; border-collapse: collapse; font-family: sans-serif;">
+                    <thead>
+                        <tr style="background: #eee;">
+                            <th style="border: 1px solid #ddd; padding: 8px;">Hora</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">Tipo</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">Detalhes</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">Metros</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itensFiltrados.map(it => {
+                            const m = parseFloat(it.metros) || 0;
+                            somaEsp += m;
+                            somaReal += m;
+                            return `
+                                <tr>
+                                    <td style="border: 1px solid #ddd; padding: 8px; text-align:center;">${it.hora || '--:--'}</td>
+                                    <td style="border: 1px solid #ddd; padding: 8px; text-align:center;">${it.tipo}</td>
+                                    <td style="border: 1px solid #ddd; padding: 8px;">${it.detalhes || it.detalhe}</td>
+                                    <td style="border: 1px solid #ddd; padding: 8px; text-align:center;"><strong>${m.toFixed(2)} m</strong></td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                    <tfoot>
+                        <tr style="background: #fff9c4;">
+                            <td colspan="3" style="text-align: right; padding: 10px; font-weight: bold;">Subtotal ${esp}mm:</td>
+                            <td style="text-align: center; border: 1px solid #ddd;"><strong>${somaEsp.toFixed(2)} m</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        `;
+    });
+
+    janela.document.write(`
+        <html>
+        <head>
+            <title>Relatório Serra - Atlas Painel</title>
+            <style>
+                body { font-family: sans-serif; margin: 30px; color: #333; }
+                .header-table { width: 100%; border-bottom: 3px solid #c41e24; margin-bottom: 20px; }
+                .logo { max-height: 70px; }
+                .footer { margin-top: 40px; text-align: right; font-size: 1.4rem; border-top: 2px solid #333; padding-top: 10px; }
+                @media print { .no-print { display: none; } }
+            </style>
+        </head>
+        <body>
+            <table class="header-table">
+                <tr>
+                    <td><img src="logo.png" class="logo" onerror="this.src='https://via.placeholder.com/150x60?text=ATLAS+PAINEL'"></td>
+                    <td style="text-align: right;">
+                        <h1 style="margin:0;">RELATÓRIO DE PRODUÇÃO - SERRA</h1>
+                        <p style="margin:5px 0;">Data: <strong>${rel.data}</strong> | Operador: <strong>${rel.operador}</strong></p>
+                    </td>
+                </tr>
+            </table>
+
+            ${tabelasHtml}
+
+            <div class="footer">
+                TOTAL GERAL: <strong>${somaReal.toFixed(2)} metros</strong>
+            </div>
+
+            <p style="margin-top: 80px; text-align: center; font-size: 12px;">
+                ________________________________________________<br>
+                Assinatura de Conferência (${rel.operador})
+            </p>
+
+            <button onclick="window.print()" class="no-print" style="margin-top: 20px; padding: 12px; background: #c41e24; color: white; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; width: 100%;">
+                🖨️ IMPRIMIR / SALVAR PDF
+            </button>
+        </body>
+        </html>
+    `);
+    janela.document.close();
 }
