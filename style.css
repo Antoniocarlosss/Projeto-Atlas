@@ -378,3 +378,125 @@ body.tema-escuro .form-section span {
 body.tema-escuro header {
     border-bottom: 1px solid #333;
 }
+/* --- ESTILOS ESPECÍFICOS MÓDULO SERRA --- */
+
+/* Linha de destaque para o cabeçalho de produção ativo */
+#serra-setup-header.producao-ativa {
+    border-left: 12px solid var(--blue-vivid);
+    background: #eef7ff;
+}
+
+/* Botões de Seleção de Modo (Pedido vs Stock) */
+#serra-form-lancamento .btn-save {
+    flex: 1;
+    opacity: 0.6;
+    transition: 0.3s;
+}
+
+#serra-form-lancamento .btn-save.ativo {
+    opacity: 1;
+    transform: scale(1.05);
+    border: 2px solid var(--black);
+}
+
+/* Tabela de Itens Inseridos (Cards Dinâmicos) */
+.linha-serra-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-left: 8px solid var(--primary);
+    margin-bottom: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    align-items: center;
+}
+
+.info-item-serra {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.info-item-serra b {
+    color: var(--primary);
+    font-size: 1.1rem;
+}
+
+.acoes-item-serra {
+    display: flex;
+    gap: 8px;
+}
+
+/* Badge de RAL e Tipo */
+.badge-serra {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    background: #eee;
+    margin-right: 5px;
+    text-transform: uppercase;
+}
+
+/* Estilo do Resumo de Metros */
+.resumo-serra {
+    border: 2px dashed var(--primary);
+    text-align: center;
+    font-size: 1.3rem;
+}
+
+.resumo-serra span {
+    color: var(--primary);
+    font-size: 1.5rem;
+    font-weight: 900;
+}
+
+/* Animação para quando trocar de modo */
+#campos-dinamicos-serra {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Modo Escuro para a Serra */
+body.tema-escuro .linha-serra-item {
+    background: #2d2d2d;
+    border-color: #444;
+}
+
+body.tema-escuro .resumo-serra {
+    background: #331111;
+}
+/* Estilo Escuro para o Módulo Serra */
+#modulo-serra {
+    background: #121212; /* Fundo bem escuro */
+    color: #ffffff;
+}
+
+#modulo-serra .form-section {
+    background: #1e1e1e !important; /* Cards cinza escuro */
+    border: 1px solid #333 !important;
+}
+
+#modulo-serra h4, #modulo-serra h3 {
+    color: #ffeb3b; /* Títulos em amarelo para destacar */
+}
+
+/* Deixa o resumo final bem visível */
+.resumo-serra {
+    background: #263238 !important;
+    border: 2px dashed #4caf50 !important;
+    color: #4caf50 !important;
+    font-size: 1.2rem;
+}
+
+/* Inputs da serra */
+#modulo-serra input, #modulo-serra select {
+    border-radius: 4px;
+    padding: 10px;
+}
