@@ -49,11 +49,75 @@
     <div class="card gray" onclick="abrirModulo('Configuração')"><i>🛠️</i><span>Configuração</span></div>
 </section>
 
-<section id="modulo-serra" style="display:none;">
-    <button onclick="voltarHome()" class="btn-voltar">← Voltar</button>
-    <div class="form-section"><h3>Módulo Serra</h3><p>Conteúdo em desenvolvimento...</p></div>
-</section>
+<section id="modulo-serra" style="display:none; background: #121212; color: white; min-height: 100vh; padding: 15px;">
+    <button onclick="voltarHome()" class="btn-voltar" style="margin-bottom: 20px;">← Voltar</button>
 
+    <div class="tabs" style="display: flex; gap: 5px; margin-bottom: 20px;">
+        <button class="tab-btn active" id="tab-serra-prod" onclick="mudarAbaSerra('producao')" style="flex:1; padding: 12px;">Produção</button>
+        <button class="tab-btn" id="tab-serra-hist" onclick="mudarAbaSerra('historico')" style="flex:1; padding: 12px;">Histórico</button>
+    </div>
+
+    <div id="aba-serra-producao">
+        <div class="form-section highlight" id="serra-setup-header" style="background: #1e1e1e; padding: 15px; border-radius: 8px; border: 1px solid #333;">
+            <h4 style="color: #ffeb3b; margin-top: 0;">Configuração de Produção</h4>
+            <div class="form-row" style="display: flex; gap: 10px;">
+                <select id="serra-tipo-chapa" style="flex: 2; padding: 12px; background: #333; color: white; border: 1px solid #555;">
+                    <option value="" disabled selected>Tipo de Chapa</option>
+                    <option value="5 Ondas">5 Ondas</option>
+                    <option value="Fachada Oculta">Fachada Oculta</option>
+                    <option value="Telha Canudo">Telha Canudo</option>
+                </select>
+                <select id="serra-espessura" style="flex: 1; padding: 12px; background: #333; color: white; border: 1px solid #555;">
+                    <option value="" disabled selected>mm</option>
+                    <option value="30">30 mm</option>
+                    <option value="40">40 mm</option>
+                    <option value="50">50 mm</option>
+                    <option value="60">60 mm</option>
+                    <option value="80">80 mm</option>
+                    <option value="100">100 mm</option>
+                </select>
+            </div>
+            <button onclick="iniciarProducaoSerra()" id="btn-iniciar-serra" class="btn-save blue" style="margin-top:15px; width: 100%; font-weight: bold; background: #2196f3; color: white; border: none; padding: 15px; border-radius: 5px;">INICIAR PRODUÇÃO</button>
+        </div>
+
+        <div id="serra-form-lancamento" class="form-section" style="display:none; border-top: 4px solid #c41e24; background: #1e1e1e; padding: 15px; margin-top: 15px; border-radius: 8px;">
+            <div style="background: #333; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center; border: 1px solid #444;">
+                <strong id="resumo-config-ativa" style="color: #ffeb3b; font-size: 1.1rem;">---</strong>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button onclick="selecionarModoSerra('pedido')" id="btn-modo-pedido" class="btn-save" style="flex:1; padding: 10px; border: none; border-radius: 4px; font-weight: bold;">PEDIDO</button>
+                <button onclick="selecionarModoSerra('stock')" id="btn-modo-stock" class="btn-save" style="flex:1; padding: 10px; border: none; border-radius: 4px; font-weight: bold;">STOCK</button>
+            </div>
+
+            <div id="campos-dinamicos-serra"></div>
+
+            <button onclick="inserirLinhaSerra()" class="btn-save green" style="width: 100%; font-weight: bold; margin-top: 10px; background: #4caf50; color: white; border: none; padding: 15px; border-radius: 5px;">+ INSERIR NA LISTA</button>
+            
+            <button onclick="finalizarEspessuraSerra()" id="btn-finalizar-esp" class="btn-save" style="margin-top:10px; width: 100%; background: #f39c12; color: white; border: none; padding: 10px; border-radius: 5px; font-weight: bold;">MUDAR ESPESSURA / TIPO</button>
+        </div>
+
+        <div id="lista-serra-temp" class="form-section" style="display:none; margin-top: 20px; background: #1e1e1e; padding: 15px; border-radius: 8px;">
+            <h4 style="color: #bbb; border-bottom: 1px solid #333; padding-bottom: 10px;">Produção em Fila</h4>
+            
+            <div id="tabela-serra-corpo" style="margin-bottom: 20px;">
+                </div>
+            
+            <div class="resumo-serra" style="padding:15px; background:#263238; border: 2px dashed #4caf50; text-align: center; border-radius: 8px;">
+                <strong style="color: #4caf50; font-size: 1.3rem;">TOTAL GERAL: <span id="soma-metros-serra">0</span> m</strong>
+            </div>
+            
+            <button onclick="fecharDiaSerra()" class="btn-save" style="background: #c41e24; color: white; border: none; margin-top:20px; width:100%; padding: 15px; font-weight: bold; border-radius: 5px;">FINALIZAR DIA / GERAR RELATÓRIO</button>
+        </div>
+    </div>
+
+    <div id="aba-serra-historico" style="display:none;">
+        <div class="form-section" style="background: #1e1e1e; padding: 15px; border-radius: 8px;">
+            <h3 style="color: white;">Relatórios Anteriores</h3>
+            <div id="lista-historico-serra"></div>
+        </div>
+    </div>
+</section>
 <section id="modulo-embalagem" style="display:none;">
     <button onclick="voltarHome()" class="btn-voltar">← Voltar</button>
     <div class="form-section"><h3>Módulo Embalagem</h3><p>Conteúdo em desenvolvimento...</p></div>
@@ -248,7 +312,7 @@
                     <option value="compacto">Compacto</option>
                     <option value="grande">Grande (Acessibilidade)</option>
                 </select>
-                <div style="margin-top: 25px; border-top: 1px solid #ddd; padding-top: 15px;">
+                <div style="margin-top: 25px; border-top: 1px solid #ddd; padding-top: 15px;"></div>
     <h3>Personalizar Home</h3>
     <p>Selecione os módulos que deseja ver no menu principal:</p>
     
